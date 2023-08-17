@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chess PGN Generator</title>
+</head>
+
+<body>
+    <h1>Chess PGN Generator</h1>
+    <label for="username">Enter Username: </label>
+    <input type="text" id="username" />
+    <button id="generateButton">Generate PGN</button>
+    <a id="downloadLink" style="display: none;">Download PGN</a>
+
+    <script>
+        const generateButton = document.getElementById('generateButton');
+        const downloadLink = document.getElementById('downloadLink');
+
+        generateButton.addEventListener('click', async () => {
+            const username = document.getElementById('username').value;
+            if (username) {
+                try {
+                    const archivesResponse = await fetch(`https://api.chess.com/pub/player/${username}/games/archives`);
+                    const archivesData = await archivesResponse.json();
+
+                    // Iterate through archives and fetch games for each month and year
+                    const pgnData = await fetchAndConcatenatePGN(archivesData.archives);
+
+                    // Create a Blob for the PGN data
+                    const blob = new Blob([pgnData], { type: 'text/plain' });
+
+                    // Create a URL for the Blob and set it as the download link
+                    const url = URL.createObjectURL(blob);
+                    downloadLink.href = url;
+                    downloadLink.download = `${username}_chess_games.pgn`;
+                    downloadLink.style.display = 'block';
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+        });
+
+        async function fetchAndConcatenatePGN(archives) {
+            const pgnGames = [];
+
+            for (const archiveUrl of archives) {
+                try {
+                    const archiveResponse = await fetch(archiveUrl);
+                    const archiveData = await archiveResponse.json();
+
+                    // Append PGN-formatted games to pgnGames
+                    pgnGames.push(...archiveData.games);
+                } catch (error) {
+                    console.error('Error fetching games:', error);
+                }
+            }
+
+            return pgnGames.join('\n\n');
+        }
+    </script>
+</body>
+
+</html>
