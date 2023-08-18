@@ -67,7 +67,7 @@
                     const archiveData = await archiveResponse.json();
 
                     for (const game of archiveData.games) {
-                        pgnText += game.PGN + '\n\n';
+                        pgnText += game.pgn + '\n\n';
 
                         // Display PGN data incrementally to avoid memory overload
                         pgnOutput.textContent = pgnText;
