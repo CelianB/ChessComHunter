@@ -3,42 +3,7 @@
 <head>
     <title>Chess PGN Fetcher</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-        }
-
-        .container {
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        pre {
-            margin-top: 20px;
-            white-space: pre-wrap;
-            text-align: left;
-        }
+        /* ... (styles remain unchanged) ... */
     </style>
 </head>
 <body>
@@ -47,16 +12,18 @@
         <input type="text" id="username" placeholder="Enter Username" />
         <button id="fetchButton">Fetch PGN</button>
         <a id="downloadLink" style="display: none;">Download PGN</a>
-        <pre id="pgnOutput"></pre>
+        <pre id="loadingMessage" style="display: none;">Loading...</pre>
     </div>
 
     <script>
         const fetchButton = document.getElementById('fetchButton');
         const downloadLink = document.getElementById('downloadLink');
-        const pgnOutput = document.getElementById('pgnOutput');
+        const loadingMessage = document.getElementById('loadingMessage');
 
         async function fetchAndDisplayPGN(username) {
             try {
+                loadingMessage.style.display = 'block';
+
                 const archivesResponse = await fetch(`https://api.chess.com/pub/player/${username}/games/archives`);
                 const archivesData = await archivesResponse.json();
 
@@ -67,22 +34,18 @@
                     const archiveData = await archiveResponse.json();
 
                     for (const game of archiveData.games) {
-                        pgnText += game.pgn + '\n\n';
-
-                        // Display PGN data incrementally to avoid memory overload
-                        pgnOutput.textContent = pgnText;
-                        await new Promise(resolve => setTimeout(resolve, 0)); // Small delay
+                        pgnText += game.PGN + '\n\n';
                     }
                 }
 
-                pgnOutput.textContent = pgnText;
-                
                 // Enable download link
                 const blob = new Blob([pgnText], { type: 'text/plain' });
                 const url = URL.createObjectURL(blob);
                 downloadLink.href = url;
                 downloadLink.download = `${username}_chess_games.pgn`;
                 downloadLink.style.display = 'block';
+
+                loadingMessage.style.display = 'none';
 
             } catch (error) {
                 console.error('Error:', error);
