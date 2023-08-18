@@ -2,13 +2,53 @@
 <html>
 <head>
     <title>Chess PGN Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        a {
+            display: none;
+            margin-top: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>Chess PGN Generator</h1>
-    <label for="username">Enter Username: </label>
-    <input type="text" id="username" />
-    <button id="generateButton">Generate PGN</button>
-    <a id="downloadLink" style="display: none;">Download PGN</a>
+    <div class="container">
+        <h1>Chess PGN Generator</h1>
+        <input type="text" id="username" placeholder="Enter Username" />
+        <button id="generateButton">Generate PGN</button>
+        <a id="downloadLink" download>Download PGN</a>
+    </div>
 
     <script>
         const generateButton = document.getElementById('generateButton');
@@ -30,7 +70,6 @@
                     // Create a URL for the Blob and set it as the download link
                     const url = URL.createObjectURL(blob);
                     downloadLink.href = url;
-                    downloadLink.download = `${username}_chess_games.pgn`;
                     downloadLink.style.display = 'block';
                 } catch (error) {
                     console.error('Error:', error);
