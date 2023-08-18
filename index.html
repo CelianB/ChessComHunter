@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Chess PGN Generator</title>
     <style>
@@ -7,7 +8,7 @@
             font-family: Arial, sans-serif;
             text-align: center;
         }
-        
+
         h1 {
             margin-bottom: 20px;
         }
@@ -42,6 +43,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Chess PGN Generator</h1>
@@ -58,7 +60,7 @@
             const username = document.getElementById('username').value;
             if (username) {
                 try {
-                    const archivesResponse = await fetch(`https://api.chess.com/pub/player/${username}/games/archives`);
+                    const archivesResponse = await fetch(`https://api.chess.com/pub/player/${username}/games/archives`, { mode: 'cors' });
                     const archivesData = await archivesResponse.json();
 
                     // Iterate through archives and fetch games for each month and year
@@ -82,7 +84,7 @@
 
             for (const archiveUrl of archives) {
                 try {
-                    const archiveResponse = await fetch(archiveUrl);
+                    const archiveResponse = await fetch(archiveUrl, { mode: 'cors' });
                     const archiveData = await archiveResponse.json();
 
                     // Append PGN-formatted games to pgnGames
@@ -96,4 +98,5 @@
         }
     </script>
 </body>
+
 </html>
