@@ -46,11 +46,13 @@
         <h1>Chess PGN Fetcher</h1>
         <input type="text" id="username" placeholder="Enter Username" />
         <button id="fetchButton">Fetch PGN</button>
+        <a id="downloadLink" style="display: none;">Download PGN</a>
         <pre id="pgnOutput"></pre>
     </div>
 
     <script>
         const fetchButton = document.getElementById('fetchButton');
+        const downloadLink = document.getElementById('downloadLink');
         const pgnOutput = document.getElementById('pgnOutput');
 
         async function fetchAndDisplayPGN(username) {
@@ -74,6 +76,14 @@
                 }
 
                 pgnOutput.textContent = pgnText;
+                
+                // Enable download link
+                const blob = new Blob([pgnText], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                downloadLink.href = url;
+                downloadLink.download = `${username}_chess_games.pgn`;
+                downloadLink.style.display = 'block';
+
             } catch (error) {
                 console.error('Error:', error);
             }
