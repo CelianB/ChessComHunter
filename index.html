@@ -1,63 +1,98 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>Chess PGN Generator</title>
-</head>
+    <title>Chess PGN Fetcher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
 
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        pre {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            text-align: left;
+        }
+    </style>
+</head>
 <body>
-    <h1>Chess PGN Generator</h1>
-    <label for="username">Enter Username: </label>
-    <input type="text" id="username" />
-    <button id="generateButton">Generate PGN</button>
-    <a id="downloadLink" style="display: none;">Download PGN</a>
+    <div class="container">
+        <h1>Chess PGN Fetcher</h1>
+        <input type="text" id="username" placeholder="Enter Username" />
+        <button id="fetchButton">Fetch PGN</button>
+        <a id="downloadLink" style="display: none;">Download PGN</a>
+        <pre id="loadingMessage" style="display: none;">Loading...</pre>
+    </div>
 
     <script>
-        const generateButton = document.getElementById('generateButton');
+        const fetchButton = document.getElementById('fetchButton');
         const downloadLink = document.getElementById('downloadLink');
+        const loadingMessage = document.getElementById('loadingMessage');
 
-        generateButton.addEventListener('click', async () => {
-            const username = document.getElementById('username').value;
-            if (username) {
-                try {
-                    const archivesResponse = await fetch(`https://api.chess.com/pub/player/${username}/games/archives`);
-                    const archivesData = await archivesResponse.json();
+        async function fetchAndDisplayPGN(username) {
+            try {
+                loadingMessage.style.display = 'block';
 
-                    // Iterate through archives and fetch games for each month and year
-                    const pgnData = await fetchAndConcatenatePGN(archivesData.archives);
+                const archivesResponse = await fetch(`https://api.chess.com/pub/player/${username}/games/archives`);
+                const archivesData = await archivesResponse.json();
 
-                    // Create a Blob for the PGN data
-                    const blob = new Blob([pgnData], { type: 'text/plain' });
+                let pgnText = '';
 
-                    // Create a URL for the Blob and set it as the download link
-                    const url = URL.createObjectURL(blob);
-                    downloadLink.href = url;
-                    downloadLink.download = `${username}_chess_games.pgn`;
-                    downloadLink.style.display = 'block';
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            }
-        });
-
-        async function fetchAndConcatenatePGN(archives) {
-            const pgnGames = [];
-
-            for (const archiveUrl of archives) {
-                try {
+                for (const archiveUrl of archivesData.archives) {
                     const archiveResponse = await fetch(archiveUrl);
                     const archiveData = await archiveResponse.json();
 
-                    // Append PGN-formatted games to pgnGames
-                    pgnGames.push(...archiveData.games);
-                } catch (error) {
-                    console.error('Error fetching games:', error);
+                    for (const game of archiveData.games) {
+                        pgnText += game.pgn + '\n\n';
+                    }
                 }
-            }
 
-            return pgnGames.join('\n\n');
+                // Enable download link
+                const blob = new Blob([pgnText], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                downloadLink.href = url;
+                downloadLink.download = `${username}_chess_games.pgn`;
+                downloadLink.style.display = 'block';
+
+                loadingMessage.style.display = 'none';
+
+            } catch (error) {
+                console.error('Error:', error);
+            }
         }
+
+        fetchButton.addEventListener('click', () => {
+            const username = document.getElementById('username').value;
+            if (username) {
+                fetchAndDisplayPGN(username);
+            }
+        });
     </script>
 </body>
-
 </html>
