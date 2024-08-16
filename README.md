@@ -1,5 +1,5 @@
 # ChessComHunter
-> Dont judge code, it is 100% made by a GPT chat prompt
+> Code 100% made by a GPT chat prompt
 
 1.  Search with chesscom nickname
 ![alt text](image.png)
